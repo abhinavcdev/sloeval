@@ -1,6 +1,6 @@
 # 0001: Repo layout and AISLO v1alpha1
 
-Status: **proposed**, open questions answered (section 8); awaiting approval
+Status: **accepted** (2026-11-26). Open questions answered in section 8.
 
 ## 1. Example spec
 
@@ -495,7 +495,7 @@ CI-friendly output.
 | Module | Why | License |
 |---|---|---|
 | `go.yaml.in/yaml/v3` | YAML with node positions (line/col in errors); the maintained successor of the archived `gopkg.in/yaml.v3` | MIT / Apache-2.0 |
-| `github.com/santhosh-tekuri/jsonschema/v6` | Draft 2020-12 validator with structured errors (instance paths) and no transitive deps | Apache-2.0 |
+| `github.com/santhosh-tekuri/jsonschema/v6` | Draft 2020-12 validator with structured errors (instance paths); only transitive dep is `golang.org/x/text` | Apache-2.0 |
 
 No CLI framework: stdlib `flag` with a small subcommand switch until there
 are enough commands to justify cobra. No assertion libraries: golden files
