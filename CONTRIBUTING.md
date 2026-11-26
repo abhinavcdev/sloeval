@@ -28,7 +28,7 @@ Go 1.24+ is required. Python is used only under `sdk/python` (later phases).
 
 - Tests are table-driven.
 - Every generated output (diagnostics, rules, dashboards) has a golden file
-  under the package's `testdata/`. Regenerate with `make golden`, then review
+  under the package's `testdata/`. Regenerate with `make golden` (sets `UPDATE_GOLDEN=1`), then review
   the diff line by line before committing. CI fails if goldens are stale.
 - Every generated rule file must pass `promtool check rules`, and every alert
   must have a `promtool test rules` unit test.
