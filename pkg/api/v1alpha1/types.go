@@ -93,7 +93,7 @@ const (
 	SourceServer LatencySource = "server"
 )
 
-// LatencySLI: good = requests with duration <= Threshold.
+// LatencySLI measures an SLI where good = requests with duration <= Threshold.
 type LatencySLI struct {
 	Stage LatencyStage `json:"stage"`
 	// Source defaults to SourceClient.
@@ -102,7 +102,7 @@ type LatencySLI struct {
 	Selector  *Selector     `json:"selector,omitempty"`
 }
 
-// ErrorRatioSLI: good = operations with no error.type, except listed types.
+// ErrorRatioSLI measures an SLI where good = operations with no error.type, except listed types.
 type ErrorRatioSLI struct {
 	ExcludeErrorTypes []string  `json:"excludeErrorTypes,omitempty"`
 	Selector          *Selector `json:"selector,omitempty"`
@@ -117,14 +117,14 @@ const (
 	CostPerTask    CostUnit = "task"
 )
 
-// CostSLI: good = requests or tasks whose cost is <= ThresholdUSD.
+// CostSLI measures an SLI where good = requests or tasks whose cost is <= ThresholdUSD.
 type CostSLI struct {
 	Per          CostUnit  `json:"per"`
 	ThresholdUSD float64   `json:"thresholdUSD"`
 	Selector     *Selector `json:"selector,omitempty"`
 }
 
-// EvalScoreSLI: good = evaluation results for Evaluator that pass.
+// EvalScoreSLI measures an SLI where good = evaluation results for Evaluator that pass.
 // Exactly one of MinScore or PassLabels is set.
 type EvalScoreSLI struct {
 	Evaluator  string    `json:"evaluator"`
@@ -133,19 +133,19 @@ type EvalScoreSLI struct {
 	Selector   *Selector `json:"selector,omitempty"`
 }
 
-// EvalCoverageSLI: good = operations with at least one Evaluator result.
+// EvalCoverageSLI measures an SLI where good = operations with at least one Evaluator result.
 type EvalCoverageSLI struct {
 	Evaluator string    `json:"evaluator"`
 	Selector  *Selector `json:"selector,omitempty"`
 }
 
-// ToolSuccessSLI: good = tool executions with no error.type. Empty Tools means all tools.
+// ToolSuccessSLI measures an SLI where good = tool executions with no error.type. Empty Tools means all tools.
 type ToolSuccessSLI struct {
 	Tools    []string  `json:"tools,omitempty"`
 	Selector *Selector `json:"selector,omitempty"`
 }
 
-// JudgeAgreementSLI: good = items where Judge's label matches Reference's label.
+// JudgeAgreementSLI measures an SLI where good = items where Judge's label matches Reference's label.
 type JudgeAgreementSLI struct {
 	Judge     string    `json:"judge"`
 	Reference string    `json:"reference"`

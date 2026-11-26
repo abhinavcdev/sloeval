@@ -49,7 +49,7 @@ f: yes
 		t.Errorf("value = %#v\nwant   %#v", docs[0].Value, want)
 	}
 	tests := []struct {
-		path      Path
+		path       Path
 		value, key Pos
 	}{
 		{Path{}.Key("a"), Pos{1, 4}, Pos{1, 1}},

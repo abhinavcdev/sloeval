@@ -8,7 +8,7 @@ func TestClosest(t *testing.T) {
 		{"objectve", "objective"},
 		{"objetcive", "objective"},
 		{"windwo", "window"},
-		{"nmae", "name"},
+		{"naem", "name"},
 		{"lables", "labels"},
 		{"sl", "sli"},
 		{"completely_different", ""},

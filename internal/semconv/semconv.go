@@ -159,7 +159,7 @@ const (
 func PromLabel(attr string) string {
 	b := []byte(attr)
 	for i, c := range b {
-		if !(c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9') {
+		if c != '_' && (c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') {
 			b[i] = '_'
 		}
 	}
