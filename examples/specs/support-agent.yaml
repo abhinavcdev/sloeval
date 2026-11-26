@@ -1,0 +1,102 @@
+# AISLO for a tier-1 customer support agent. It uses every SLI kind.
+#
+#   sloe validate examples/specs/support-agent.yaml
+#
+# Latency, cost and score thresholds sit on histogram bucket boundaries
+# (OTel GenAI semconv advisory buckets, or sloe connector defaults), because
+# a Prometheus "le" matcher can only measure at a boundary.
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: support-agent
+  namespace: support
+spec:
+  service: support-agent
+  description: Tier-1 customer support agent (chat + ticketing tools).
+  labels:
+    team: support
+    tier: "1"
+  selector:
+    matchLabels:
+      # A resource attribute; promote it in your OTLP ingestion config.
+      deployment_environment_name: prod
+  alerting:
+    annotations:
+      runbook_url: https://runbooks.example.com/support-agent
+    page:
+      labels:
+        severity: critical
+    ticket:
+      labels:
+        severity: warning
+  slos:
+    - name: ttft
+      description: Users see the first token quickly.
+      objective: 99
+      window: 30d
+      sli:
+        latency:
+          stage: ttft
+          source: client
+          threshold: 640ms
+
+    - name: latency
+      description: Full responses complete in time.
+      objective: 99
+      sli:
+        latency:
+          stage: end_to_end
+          threshold: 10240ms
+
+    - name: availability
+      objective: 99.5
+      sli:
+        errorRatio:
+          excludeErrorTypes: [cancelled]
+
+    - name: cost-per-task
+      description: A resolved conversation costs at most 25 cents.
+      objective: 95
+      sli:
+        cost:
+          per: task
+          thresholdUSD: 0.25
+
+    - name: helpfulness
+      objective: 90
+      sli:
+        evalScore:
+          evaluator: helpfulness
+          minScore: 0.7
+
+    - name: groundedness
+      objective: 97
+      sli:
+        evalScore:
+          evaluator: groundedness
+          passLabels: [grounded]
+
+    - name: eval-coverage
+      description: Enough traffic is evaluated for the eval SLOs to mean something.
+      objective: 98
+      sli:
+        evalCoverage:
+          evaluator: helpfulness
+
+    - name: tools
+      objective: 99
+      sli:
+        toolSuccess:
+          tools: [search_kb, create_ticket]
+      alerting:
+        page:
+          disabled: true   # tickets only
+
+    - name: judge-vs-human
+      description: The helpfulness judge agrees with human reviewers.
+      objective: 85
+      window: 28d
+      sli:
+        judgeAgreement:
+          judge: helpfulness
+          reference: human_review

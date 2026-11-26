@@ -553,8 +553,12 @@ CI tools (installed as binaries, not Go deps): `golangci-lint`, `promtool`
   that must declare its metrics and labels, so the allowlist can still be checked.
 - **Q7 TTFT:** application teams mostly instrument the client, while
   server-side TTFT exists only for teams running their own model servers.
-  `latency.source: client|server` defaults to `client`:
-  - `end_to_end` + `client` -> `gen_ai.client.operation.duration`.
-  - `ttft` + `server` -> `gen_ai.server.time_to_first_token`.
-  - `ttft` + `client`: the client metric name is still changing, so it is
-    the name the SDK/connector emits, pinned in `internal/semconv`.
+  `latency.source: client|server` defaults to `client`.
+  *Correction (Phase 0 implementation):* the GenAI conventions moved to
+  `open-telemetry/semantic-conventions-genai`, and its v0.1.0 release (pinned
+  in `internal/semconv`) defines a client-side TTFT metric. The mapping is:
+  - `ttft` + `client` -> `gen_ai.client.inference.time_to_first_chunk`
+  - `end_to_end` + `client` -> `gen_ai.client.inference.duration`
+    (`gen_ai.client.operation.duration` SHOULD NOT be used for inference in v0.1.0)
+  - `ttft` + `server` -> `gen_ai.server.time_to_first_token`
+  - `end_to_end` + `server` -> `gen_ai.server.request.duration`

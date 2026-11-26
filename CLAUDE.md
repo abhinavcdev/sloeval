@@ -62,6 +62,8 @@ docs/prompts/             per-phase task prompts
 - SLI kind is a keyed one-of under `sli:` (exactly one of latency, errorRatio,
   cost, evalScore, evalCoverage, toolSuccess, judgeAgreement).
 - `latency.source: client|server`, default `client`.
+- Semconv is pinned to open-telemetry/semantic-conventions-genai v0.1.0 (GenAI moved out of
+  the main semconv repo). Client TTFT = gen_ai.client.inference.time_to_first_chunk.
 - Metric naming is a CLI option `--metric-naming=underscore|utf8` (default underscore), not a spec field.
 - Cost per task: task = outermost `invoke_agent` span; `sloe.task.id` attribute overrides.
 - judgeAgreement series come from the Python judge runner.
@@ -72,6 +74,6 @@ docs/prompts/             per-phase task prompts
 ## Commands
 
 ```sh
-make build test lint golden promtool promtool-check
+make build test lint golden promtool promtool-check   # golden = UPDATE_GOLDEN=1 go test ./...
 go run ./cmd/sloe validate examples/specs/support-agent.yaml
 ```
