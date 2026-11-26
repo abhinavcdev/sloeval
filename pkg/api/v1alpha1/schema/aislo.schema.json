@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sloeval.dev/schemas/aislo/v1alpha1.json",
+  "title": "AISLO",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "const": "sloeval.dev/v1alpha1" },
+    "kind":       { "const": "AISLO" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name":        { "$ref": "#/$defs/dnsName" },
+        "namespace":   { "$ref": "#/$defs/dnsName" },
+        "labels":      { "type": "object", "additionalProperties": { "type": "string" } },
+        "annotations": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "slos"],
+      "properties": {
+        "service":     { "$ref": "#/$defs/labelValue" },
+        "description": { "type": "string", "maxLength": 1024 },
+        "labels":      { "$ref": "#/$defs/labelMap" },
+        "selector":    { "$ref": "#/$defs/selector" },
+        "alerting":    { "$ref": "#/$defs/alerting" },
+        "slos": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/slo" } }
+      }
+    }
+  },
+  "$defs": {
+    "dnsName":    { "type": "string", "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$", "maxLength": 63 },
+    "labelName":  { "type": "string", "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$", "maxLength": 64 },
+    "labelValue": { "type": "string", "pattern": "^[A-Za-z0-9_.:/-]+$", "minLength": 1, "maxLength": 128 },
+    "labelMap": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/labelName" },
+      "additionalProperties": { "$ref": "#/$defs/labelValue" }
+    },
+    "duration": { "type": "string", "pattern": "^([0-9]+(ms|s|m|h|d|w|y))+$" },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "matchLabels": { "$ref": "#/$defs/labelMap" } }
+    },
+    "slo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "objective", "sli"],
+      "properties": {
+        "name":        { "$ref": "#/$defs/dnsName" },
+        "description": { "type": "string", "maxLength": 1024 },
+        "objective":   { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 100 },
+        "window":      { "$ref": "#/$defs/duration" },
+        "labels":      { "$ref": "#/$defs/labelMap" },
+        "sli":         { "$ref": "#/$defs/sli" },
+        "alerting":    { "$ref": "#/$defs/alerting" }
+      }
+    },
+    "sli": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "latency": {
+          "type": "object", "additionalProperties": false,
+          "required": ["stage", "threshold"],
+          "properties": {
+            "stage":     { "enum": ["ttft", "end_to_end"] },
+            "source":    { "enum": ["client", "server"] },
+            "threshold": { "$ref": "#/$defs/duration" },
+            "selector":  { "$ref": "#/$defs/selector" }
+          }
+        },
+        "errorRatio": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "excludeErrorTypes": { "type": "array", "items": { "$ref": "#/$defs/labelValue" } },
+            "selector":          { "$ref": "#/$defs/selector" }
+          }
+        },
+        "cost": {
+          "type": "object", "additionalProperties": false,
+          "required": ["per", "thresholdUSD"],
+          "properties": {
+            "per":          { "enum": ["request", "task"] },
+            "thresholdUSD": { "type": "number", "exclusiveMinimum": 0 },
+            "selector":     { "$ref": "#/$defs/selector" }
+          }
+        },
+        "evalScore": {
+          "type": "object", "additionalProperties": false,
+          "required": ["evaluator"],
+          "oneOf": [ { "required": ["minScore"] }, { "required": ["passLabels"] } ],
+          "properties": {
+            "evaluator":  { "$ref": "#/$defs/labelValue" },
+            "minScore":   { "type": "number" },
+            "passLabels": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/labelValue" } },
+            "selector":   { "$ref": "#/$defs/selector" }
+          }
+        },
+        "evalCoverage": {
+          "type": "object", "additionalProperties": false,
+          "required": ["evaluator"],
+          "properties": {
+            "evaluator": { "$ref": "#/$defs/labelValue" },
+            "selector":  { "$ref": "#/$defs/selector" }
+          }
+        },
+        "toolSuccess": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "tools":    { "type": "array", "items": { "$ref": "#/$defs/labelValue" } },
+            "selector": { "$ref": "#/$defs/selector" }
+          }
+        },
+        "judgeAgreement": {
+          "type": "object", "additionalProperties": false,
+          "required": ["judge", "reference"],
+          "properties": {
+            "judge":     { "$ref": "#/$defs/labelValue" },
+            "reference": { "$ref": "#/$defs/labelValue" },
+            "selector":  { "$ref": "#/$defs/selector" }
+          }
+        }
+      }
+    },
+    "alerting": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "disabled":    { "type": "boolean" },
+        "name":        { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$", "maxLength": 128 },
+        "labels":      { "$ref": "#/$defs/labelMap" },
+        "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
+        "page":        { "$ref": "#/$defs/alertPolicy" },
+        "ticket":      { "$ref": "#/$defs/alertPolicy" }
+      }
+    },
+    "alertPolicy": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "disabled": { "type": "boolean" },
+        "labels":   { "$ref": "#/$defs/labelMap" },
+        "windows": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["long", "short", "burnRate"],
+            "properties": {
+              "long":     { "$ref": "#/$defs/duration" },
+              "short":    { "$ref": "#/$defs/duration" },
+              "burnRate": { "type": "number", "exclusiveMinimum": 0 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
