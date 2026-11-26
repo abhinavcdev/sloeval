@@ -1,0 +1,10 @@
+testdata/invalid.yaml:9:7: error: spec.selector.matchLabels.user_id: label "user_id" is not allowed: user identifiers are unbounded and may be personal data
+    hint: metric labels must have bounded cardinality and must never carry prompts, user IDs or free text; record this on spans or logs instead
+testdata/invalid.yaml:18:7: error: spec.slos[1].objectve: unknown field "objectve"
+    hint: did you mean "objective"? ("objective" is required)
+testdata/invalid.yaml:21:16: error: spec.slos[1].sli.cost.per: "requests" is not a valid value
+    hint: did you mean "request"? use one of: request, task
+testdata/invalid.yaml:22:25: warning: spec.slos[1].sli.cost.thresholdUSD: 0.03 is not a bucket boundary of sloe.gen_ai.request.cost, so the SLI would be measured at the next bucket
+    hint: use a bucket boundary (nearest: 0.025 or 0.05), or configure your instrumentation to emit a bucket at 0.03
+../../examples/specs/support-agent.yaml: ok (1 document, 9 SLOs)
+testdata/invalid.yaml: invalid (1 document, 2 SLOs, 3 errors, 1 warning)

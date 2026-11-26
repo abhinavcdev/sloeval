@@ -1,0 +1,15 @@
+{
+  "files": [
+    {
+      "file": "../../examples/specs/support-agent.yaml",
+      "documents": 1,
+      "slos": 9,
+      "errors": 0,
+      "warnings": 0
+    }
+  ],
+  "errors": 0,
+  "warnings": 0,
+  "valid": true,
+  "diagnostics": []
+}

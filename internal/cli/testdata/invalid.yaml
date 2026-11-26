@@ -1,0 +1,22 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: demo
+spec:
+  service: demo
+  selector:
+    matchLabels:
+      user_id: u123
+  slos:
+    - name: ttft
+      objective: 99
+      sli:
+        latency:
+          stage: ttft
+          threshold: 640ms
+    - name: cost
+      objectve: 95
+      sli:
+        cost:
+          per: requests
+          thresholdUSD: 0.03

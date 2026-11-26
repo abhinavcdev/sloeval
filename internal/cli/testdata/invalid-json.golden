@@ -1,0 +1,56 @@
+{
+  "files": [
+    {
+      "file": "testdata/invalid.yaml",
+      "documents": 1,
+      "slos": 2,
+      "errors": 3,
+      "warnings": 1
+    }
+  ],
+  "errors": 3,
+  "warnings": 1,
+  "valid": false,
+  "diagnostics": [
+    {
+      "severity": "error",
+      "file": "testdata/invalid.yaml",
+      "document": 1,
+      "path": "spec.selector.matchLabels.user_id",
+      "line": 9,
+      "column": 7,
+      "message": "label \"user_id\" is not allowed: user identifiers are unbounded and may be personal data",
+      "hint": "metric labels must have bounded cardinality and must never carry prompts, user IDs or free text; record this on spans or logs instead"
+    },
+    {
+      "severity": "error",
+      "file": "testdata/invalid.yaml",
+      "document": 1,
+      "path": "spec.slos[1].objectve",
+      "line": 18,
+      "column": 7,
+      "message": "unknown field \"objectve\"",
+      "hint": "did you mean \"objective\"? (\"objective\" is required)"
+    },
+    {
+      "severity": "error",
+      "file": "testdata/invalid.yaml",
+      "document": 1,
+      "path": "spec.slos[1].sli.cost.per",
+      "line": 21,
+      "column": 16,
+      "message": "\"requests\" is not a valid value",
+      "hint": "did you mean \"request\"? use one of: request, task"
+    },
+    {
+      "severity": "warning",
+      "file": "testdata/invalid.yaml",
+      "document": 1,
+      "path": "spec.slos[1].sli.cost.thresholdUSD",
+      "line": 22,
+      "column": 25,
+      "message": "0.03 is not a bucket boundary of sloe.gen_ai.request.cost, so the SLI would be measured at the next bucket",
+      "hint": "use a bucket boundary (nearest: 0.025 or 0.05), or configure your instrumentation to emit a bucket at 0.03"
+    }
+  ]
+}
