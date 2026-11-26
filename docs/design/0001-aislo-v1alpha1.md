@@ -1,6 +1,6 @@
 # 0001: Repo layout and AISLO v1alpha1
 
-Status: **proposed** (Phase 0, task 1, awaiting approval)
+Status: **proposed**, open questions answered (section 8); awaiting approval
 
 ## 1. Example spec
 
@@ -184,6 +184,7 @@ const (
 // histogram bucket boundary; otherwise validate warns.
 type LatencySLI struct {
 	Stage     LatencyStage `json:"stage"`
+	Source    string       `json:"source,omitempty"` // client (default) | server; see Q7
 	Threshold Duration     `json:"threshold"`
 	Selector  *Selector    `json:"selector,omitempty"`
 }
@@ -354,6 +355,7 @@ schemas don't support (`$defs`/`$ref`, `oneOf` with `required`).
           "required": ["stage", "threshold"],
           "properties": {
             "stage":     { "enum": ["ttft", "end_to_end"] },
+            "source":    { "enum": ["client", "server"] },
             "threshold": { "$ref": "#/$defs/duration" },
             "selector":  { "$ref": "#/$defs/selector" }
           }
@@ -526,3 +528,33 @@ CI tools (installed as binaries, not Go deps): `golangci-lint`, `promtool`
   `gen_ai.server.time_to_first_token`. The client-side TTFT metric is still
   in flux. I'll keep both candidates in `internal/semconv` and pin a semconv
   version. Which side do your users usually instrument?
+
+## 8. Decisions on open questions
+
+- **Q1 API group:** `sloeval.dev`, provided the owner registers that domain
+  before v0.1.0. If they don't, change the single `Group` constant and the
+  schema `const` before the first release. After the release it's a breaking change.
+- **Q2 Metric names:** both are supported. This is a CLI/compile option,
+  `--metric-naming=underscore|utf8` (default `underscore`), not a spec field:
+  naming depends on how the backend ingests, not on the SLO. Both forms live
+  in `internal/semconv`.
+- **Q3 Cost per task:** a task is the outermost `invoke_agent` span (no
+  `invoke_agent` ancestor). A span attribute `sloe.task.id` overrides this
+  for frameworks that don't nest spans that way. The connector buffers spans
+  per trace, bounded by time and count. Late or overflowing spans are
+  dropped and counted in a self-metric.
+- **Q4 judgeAgreement:** the Python judge runner emits
+  `sloe_judge_agreement_total{judge,reference,outcome}`. The connector stays
+  stateless for evaluations.
+- **Q5 Selectors:** equality-only in v1alpha1. If more is needed later, add
+  `matchExpressions` with `In`/`NotIn` (bounded and allowlist-checkable)
+  rather than raw regex.
+- **Q6 Raw escape hatch:** deferred. Revisit in v1alpha2 as a `custom` SLI
+  that must declare its metrics and labels, so the allowlist can still be checked.
+- **Q7 TTFT:** application teams mostly instrument the client, while
+  server-side TTFT exists only for teams running their own model servers.
+  `latency.source: client|server` defaults to `client`:
+  - `end_to_end` + `client` -> `gen_ai.client.operation.duration`.
+  - `ttft` + `server` -> `gen_ai.server.time_to_first_token`.
+  - `ttft` + `client`: the client metric name is still changing, so it is
+    the name the SDK/connector emits, pinned in `internal/semconv`.
