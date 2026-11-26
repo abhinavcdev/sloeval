@@ -1,0 +1,4 @@
+err-window-short-for-defaults.yaml:10:15: error: spec.slos[0].window: window 2d is not longer than the default ticket long window 3d
+    hint: use a longer window, or set alerting.ticket.windows explicitly
+err-window-short-for-defaults.yaml:10:15: warning: spec.slos[0].window: window 2d is unusual
+    hint: 28d and 30d are the usual choices; default burn rates are scaled to this window

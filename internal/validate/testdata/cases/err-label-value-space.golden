@@ -1,0 +1,2 @@
+err-label-value-space.yaml:8:11: error: spec.labels.team: "customer support" is not allowed as a label value
+    hint: label values must be 1-128 characters of letters, digits and _ . : / - (no spaces); never put free text, prompts or IDs in labels

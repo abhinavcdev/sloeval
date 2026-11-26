@@ -1,0 +1,2 @@
+err-evalscore-neither.yaml:11:9: error: spec.slos[0].sli.evalScore: one of minScore or passLabels is required
+    hint: add minScore: 0.7 (score.value >= minScore passes) or passLabels: [pass]

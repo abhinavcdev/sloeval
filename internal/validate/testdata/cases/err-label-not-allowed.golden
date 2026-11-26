@@ -1,0 +1,2 @@
+err-label-not-allowed.yaml:8:5: error: spec.labels.region: label "region" is not on the allowlist
+    hint: allowed keys: deployment_environment_name, env, error_type, gen_ai_agent_name, gen_ai_evaluation_name, gen_ai_evaluation_score_label, gen_ai_operation_name, gen_ai_provider_name, gen_ai_request_model, gen_ai_response_model, gen_ai_tool_name, gen_ai_tool_type, service_name, severity, team, tier

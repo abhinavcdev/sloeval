@@ -1,0 +1,2 @@
+err-empty-file.yaml: error: file contains no YAML documents
+    hint: add an AISLO document starting with apiVersion: sloeval.dev/v1alpha1 and kind: AISLO

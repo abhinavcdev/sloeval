@@ -1,0 +1,2 @@
+err-label-reserved.yaml:9:7: error: spec.alerting.labels.alertname: label "alertname" is reserved
+    hint: remove it; sloe and Prometheus set this label themselves

@@ -1,0 +1,2 @@
+err-label-prompt.yaml:16:15: error: spec.slos[0].sli.latency.selector.matchLabels.gen_ai_prompt: label "gen_ai_prompt" is not allowed: prompts are free text
+    hint: metric labels must have bounded cardinality and must never carry prompts, user IDs or free text; record this on spans or logs instead

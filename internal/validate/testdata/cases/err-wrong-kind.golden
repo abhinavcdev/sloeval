@@ -1,0 +1,2 @@
+err-wrong-kind.yaml:2:7: error: kind: must be "AISLO", got "ServiceLevelObjective"
+    hint: set kind: AISLO; sloe validate only accepts AISLO documents, so keep other resources in separate files

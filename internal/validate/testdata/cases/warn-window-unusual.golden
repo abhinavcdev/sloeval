@@ -1,0 +1,2 @@
+warn-window-unusual.yaml:10:15: warning: spec.slos[0].window: window 14d is unusual
+    hint: 28d and 30d are the usual choices; default burn rates are scaled to this window

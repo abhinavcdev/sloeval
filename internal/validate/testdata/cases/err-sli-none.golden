@@ -1,0 +1,2 @@
+err-sli-none.yaml:10:12: error: spec.slos[0].sli: no SLI kind is set
+    hint: set exactly one of: latency, errorRatio, cost, evalScore, evalCoverage, toolSuccess, judgeAgreement

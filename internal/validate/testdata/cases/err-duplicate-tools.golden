@@ -1,0 +1,2 @@
+err-duplicate-tools.yaml:12:27: error: spec.slos[0].sli.toolSuccess.tools[1]: duplicate value "search"
+    hint: remove the duplicate

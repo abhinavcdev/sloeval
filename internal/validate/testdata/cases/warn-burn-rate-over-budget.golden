@@ -1,0 +1,2 @@
+warn-burn-rate-over-budget.yaml:13:47: warning: spec.slos[0].alerting.page.windows[0].burnRate: burnRate 800 only fires after more than the whole error budget of a 30d window is spent within 1h
+    hint: use a burn rate of at most 720, or a shorter long window

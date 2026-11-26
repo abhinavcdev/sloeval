@@ -1,0 +1,2 @@
+err-cost-zero.yaml:13:25: error: spec.slos[0].sli.cost.thresholdUSD: thresholdUSD must be greater than 0, got 0
+    hint: use the maximum acceptable cost in US dollars, e.g. 0.05

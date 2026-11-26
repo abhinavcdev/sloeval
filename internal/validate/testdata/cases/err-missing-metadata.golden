@@ -1,0 +1,2 @@
+err-missing-metadata.yaml:1:1: error: metadata: required field is missing
+    hint: add metadata with a name, e.g. metadata: {name: support-agent}

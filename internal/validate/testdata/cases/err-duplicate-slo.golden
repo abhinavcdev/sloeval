@@ -1,0 +1,2 @@
+err-duplicate-slo.yaml:14:13: error: spec.slos[1].name: duplicate SLO name "ttft"
+    hint: rename one of them; the first is spec.slos[0]

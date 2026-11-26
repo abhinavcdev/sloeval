@@ -1,0 +1,2 @@
+err-judge-self.yaml:13:22: error: spec.slos[0].sli.judgeAgreement.reference: judge and reference are both "helpfulness"; a judge always agrees with itself
+    hint: set reference to the evaluator that produces ground-truth labels, e.g. human_review

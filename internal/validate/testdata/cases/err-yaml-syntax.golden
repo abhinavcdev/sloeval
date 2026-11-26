@@ -1,0 +1,2 @@
+err-yaml-syntax.yaml:7: error: invalid YAML: yaml: line 7: did not find expected '-' indicator
+    hint: fix the YAML syntax; check indentation and that every key is followed by ': '

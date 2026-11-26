@@ -1,0 +1,2 @@
+warn-cost-bucket.yaml:13:25: warning: spec.slos[0].sli.cost.thresholdUSD: 0.03 is not a bucket boundary of sloe.gen_ai.request.cost, so the SLI would be measured at the next bucket
+    hint: use a bucket boundary (nearest: 0.025 or 0.05), or configure your instrumentation to emit a bucket at 0.03

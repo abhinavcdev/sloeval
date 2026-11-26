@@ -1,0 +1,2 @@
+err-empty-slos.yaml:7:9: error: spec.slos: at least one SLO is required
+    hint: add slos: a list with at least one SLO

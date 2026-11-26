@@ -1,0 +1,2 @@
+err-burn-short-ge-long.yaml:10:29: error: spec.alerting.page.windows[0].short: short window 1h must be shorter than long window 1h
+    hint: the short window is usually 1/12 of the long window, e.g. long: 1h, short: 5m

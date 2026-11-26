@@ -1,0 +1,2 @@
+err-unknown-field-typo.yaml:9:7: error: spec.slos[0].objectve: unknown field "objectve"
+    hint: did you mean "objective"? ("objective" is required)

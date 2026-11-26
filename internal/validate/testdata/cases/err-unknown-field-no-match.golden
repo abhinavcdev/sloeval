@@ -1,0 +1,2 @@
+err-unknown-field-no-match.yaml:7:3: error: spec.owner: unknown field "owner"
+    hint: allowed fields here: alerting, description, labels, selector, service, slos

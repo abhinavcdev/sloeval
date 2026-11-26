@@ -1,0 +1,2 @@
+warn-objective-high.yaml:9:18: warning: spec.slos[0].objective: objective 99.999 leaves an error budget of 0.0010%
+    hint: at typical traffic the error budget is too small to alert on reliably; consider 99.9 or lower

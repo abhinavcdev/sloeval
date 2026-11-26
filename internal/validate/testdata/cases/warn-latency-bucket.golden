@@ -1,0 +1,2 @@
+warn-latency-bucket.yaml:13:22: warning: spec.slos[0].sli.latency.threshold: 2s is not a bucket boundary of gen_ai.client.inference.time_to_first_chunk, so the SLI would be measured at the next bucket
+    hint: use a bucket boundary (nearest: 1.28s or 2.56s), or configure your instrumentation to emit a bucket at 2s

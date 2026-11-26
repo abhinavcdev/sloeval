@@ -1,0 +1,2 @@
+err-label-unbounded.yaml:9:7: error: spec.selector.matchLabels.user_id: label "user_id" is not allowed: user identifiers are unbounded and may be personal data
+    hint: metric labels must have bounded cardinality and must never carry prompts, user IDs or free text; record this on spans or logs instead

@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: demo
+spec:
+  service: demo
+  alerting:
+    labels:
+      alertname: Custom
+  slos:
+    - name: ttft
+      objective: 99
+      sli:
+        latency:
+          stage: ttft
+          threshold: 640ms

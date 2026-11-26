@@ -1,0 +1,2 @@
+err-objective-range.yaml:9:18: error: spec.slos[0].objective: objective must be greater than 0 and less than 100, got 100
+    hint: objective is a percentage, e.g. 99.5 for 99.5%

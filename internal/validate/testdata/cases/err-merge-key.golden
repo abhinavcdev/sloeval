@@ -1,0 +1,2 @@
+err-merge-key.yaml:11:7: error: spec.selector.matchLabels: YAML merge keys are not supported
+    hint: write the fields out in full instead of using '<<'

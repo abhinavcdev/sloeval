@@ -1,0 +1,2 @@
+err-wrong-apiversion.yaml:1:13: error: apiVersion: must be "sloeval.dev/v1alpha1", got "sloeval.dev/v1"
+    hint: this version of sloe supports apiVersion "sloeval.dev/v1alpha1"

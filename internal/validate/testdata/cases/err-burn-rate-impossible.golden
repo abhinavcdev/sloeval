@@ -1,0 +1,2 @@
+err-burn-rate-impossible.yaml:13:47: error: spec.slos[0].alerting.page.windows[0].burnRate: burnRate 1000 can never fire: it needs an error ratio of 10, and the error ratio is at most 1
+    hint: use a burn rate below 100 for a 99% objective

@@ -1,0 +1,2 @@
+warn-objective-ratio.yaml:9:18: warning: spec.slos[0].objective: objective 0.995 is a percentage, so this means 0.995%
+    hint: did you mean 99.5?

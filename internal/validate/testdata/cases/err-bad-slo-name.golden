@@ -1,0 +1,2 @@
+err-bad-slo-name.yaml:8:13: error: spec.slos[0].name: "TTFT" is not a valid name
+    hint: use 1-63 lowercase letters, digits and '-', starting and ending with a letter or digit, e.g. ttft or cost-per-task

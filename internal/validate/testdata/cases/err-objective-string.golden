@@ -1,0 +1,2 @@
+err-objective-string.yaml:9:18: error: spec.slos[0].objective: expected number, got string
+    hint: remove the quotes and units; write a plain number

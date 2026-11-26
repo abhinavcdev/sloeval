@@ -1,0 +1,2 @@
+err-enum-typo.yaml:12:18: error: spec.slos[0].sli.latency.stage: "tfft" is not a valid value
+    hint: did you mean "ttft"? use one of: ttft, end_to_end

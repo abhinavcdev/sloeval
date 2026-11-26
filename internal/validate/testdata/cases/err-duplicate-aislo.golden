@@ -1,0 +1,2 @@
+err-duplicate-aislo.yaml:18:9: error: metadata.name: duplicate AISLO "demo" (first defined at err-duplicate-aislo.yaml:4)
+    hint: metadata.name must be unique per namespace; rename one of them

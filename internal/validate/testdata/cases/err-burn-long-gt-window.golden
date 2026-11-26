@@ -1,0 +1,4 @@
+err-burn-long-gt-window.yaml:10:15: warning: spec.slos[0].window: window 7d is unusual
+    hint: 28d and 30d are the usual choices; default burn rates are scaled to this window
+err-burn-long-gt-window.yaml:14:22: error: spec.slos[0].alerting.ticket.windows[0].long: long window 14d is longer than the SLO window 7d
+    hint: use a long window no longer than the SLO window

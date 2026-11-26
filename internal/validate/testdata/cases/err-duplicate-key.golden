@@ -1,0 +1,2 @@
+err-duplicate-key.yaml:7:3: error: spec.service: duplicate key "service"
+    hint: remove one of them (first defined at line 6)

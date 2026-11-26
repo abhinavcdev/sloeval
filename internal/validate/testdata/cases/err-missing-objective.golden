@@ -1,0 +1,2 @@
+err-missing-objective.yaml:8:7: error: spec.slos[0].objective: required field is missing
+    hint: add objective: the target percentage, e.g. objective: 99.5

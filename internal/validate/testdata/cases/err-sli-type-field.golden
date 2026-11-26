@@ -1,0 +1,2 @@
+err-sli-type-field.yaml:11:9: error: spec.slos[0].sli.type: unknown field "type"
+    hint: the SLI kind is a key, not a type field, e.g. sli: {latency: {stage: ttft, threshold: 2s}}

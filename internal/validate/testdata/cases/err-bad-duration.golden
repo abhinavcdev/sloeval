@@ -1,0 +1,2 @@
+err-bad-duration.yaml:13:22: error: spec.slos[0].sli.latency.threshold: "2 seconds" is not a valid duration
+    hint: use a Prometheus duration such as "2s", "500ms", "1h30m" or "30d"

@@ -1,0 +1,2 @@
+err-evalscore-both.yaml:11:9: error: spec.slos[0].sli.evalScore: minScore and passLabels are both set
+    hint: set only one: minScore for numeric scores, or passLabels for label-based evaluators

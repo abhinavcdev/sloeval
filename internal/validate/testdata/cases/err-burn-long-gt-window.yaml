@@ -1,0 +1,18 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: demo
+spec:
+  service: demo
+  slos:
+    - name: ttft
+      objective: 99
+      window: 7d
+      alerting:
+        ticket:
+          windows:
+            - {long: 14d, short: 1d, burnRate: 1}
+      sli:
+        latency:
+          stage: ttft
+          threshold: 640ms

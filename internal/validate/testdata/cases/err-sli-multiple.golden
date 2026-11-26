@@ -1,0 +1,2 @@
+err-sli-multiple.yaml:11:9: error: spec.slos[0].sli: more than one SLI kind is set (latency, errorRatio)
+    hint: an SLO measures one SLI; split it into separate SLOs, one per kind

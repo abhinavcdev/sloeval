@@ -1,0 +1,2 @@
+err-window-range.yaml:10:15: error: spec.slos[0].window: window 12h must be between 1d and 365d
+    hint: use 28d or 30d

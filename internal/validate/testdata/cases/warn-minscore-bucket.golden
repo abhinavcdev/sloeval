@@ -1,0 +1,2 @@
+warn-minscore-bucket.yaml:13:21: warning: spec.slos[0].sli.evalScore.minScore: 0.72 is not a bucket boundary of sloe.gen_ai.evaluation.score, so the SLI would be measured at the next bucket
+    hint: use a bucket boundary (nearest: 0.7 or 0.75), or configure your instrumentation to emit a bucket at 0.72

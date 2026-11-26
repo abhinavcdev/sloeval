@@ -1,0 +1,2 @@
+err-not-mapping.yaml:1:1: error: expected object, got array
+    hint: write a mapping of key: value pairs

@@ -1,0 +1,2 @@
+err-label-value-number.yaml:8:11: error: spec.labels.tier: expected string, got number
+    hint: quote the value to make it a string, e.g. "1"
