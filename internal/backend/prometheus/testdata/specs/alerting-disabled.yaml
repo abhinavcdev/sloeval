@@ -1,0 +1,18 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: quiet
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  alerting:
+    disabled: true
+  slos:
+    - name: errors
+      objective: 99
+      sli:
+        errorRatio: {}

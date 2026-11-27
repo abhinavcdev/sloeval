@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: e2e-server
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  slos:
+    - name: e2e
+      objective: 99
+      sli:
+        latency: {stage: end_to_end, source: server, threshold: 5.12s}

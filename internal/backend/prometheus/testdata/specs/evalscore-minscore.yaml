@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: eval-min
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  slos:
+    - name: helpful
+      objective: 90
+      sli:
+        evalScore: {evaluator: helpfulness, minScore: 0.7}

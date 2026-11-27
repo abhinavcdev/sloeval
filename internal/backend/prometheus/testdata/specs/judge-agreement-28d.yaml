@@ -1,0 +1,14 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: judge
+spec:
+  service: chat
+  labels:
+    team: ml
+  slos:
+    - name: agreement
+      objective: 85
+      window: 28d
+      sli:
+        judgeAgreement: {judge: helpfulness, reference: human_review}

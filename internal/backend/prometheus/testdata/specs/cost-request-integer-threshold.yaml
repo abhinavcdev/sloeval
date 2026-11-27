@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: cost
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  slos:
+    - name: cost
+      objective: 95
+      sli:
+        cost: {per: request, thresholdUSD: 1}

@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: agent-errors
+spec:
+  service: planner
+  selector:
+    matchLabels:
+      gen_ai_agent_name: planner
+  slos:
+    - name: errors
+      objective: 99.5
+      sli:
+        errorRatio:
+          target: agent
+          excludeErrorTypes: [cancelled, client.timeout]

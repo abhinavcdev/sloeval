@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: ttft-client
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  slos:
+    - name: ttft
+      objective: 99
+      sli:
+        latency: {stage: ttft, threshold: 0.64s}

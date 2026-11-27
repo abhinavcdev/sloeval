@@ -1,0 +1,28 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: named
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  alerting:
+    name: ChatModel
+    labels: {team: ml-oncall}
+    annotations:
+      runbook_url: https://runbooks.example.com/chat
+      dashboard: "https://grafana.example.com/d/chat?var-slo={{ $labels.sloe_slo }}"
+  slos:
+    - name: errors
+      objective: 99
+      sli:
+        errorRatio: {}
+    - name: latency
+      objective: 99
+      alerting:
+        name: ChatSlowResponses
+      sli:
+        latency: {stage: end_to_end, threshold: 2.56s}

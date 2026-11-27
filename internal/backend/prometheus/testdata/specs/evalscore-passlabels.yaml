@@ -1,0 +1,16 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: eval-labels
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  slos:
+    - name: grounded
+      objective: 97
+      sli:
+        evalScore: {evaluator: groundedness, passLabels: [grounded, partially_grounded]}

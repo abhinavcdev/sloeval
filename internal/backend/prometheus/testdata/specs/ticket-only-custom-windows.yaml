@@ -1,0 +1,23 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: ticket-only
+  namespace: ml-platform
+spec:
+  service: chat
+  labels:
+    team: ml
+  selector:
+    matchLabels:
+      gen_ai_provider_name: openai
+  slos:
+    - name: errors
+      objective: 99
+      alerting:
+        page: {disabled: true}
+        ticket:
+          labels: {severity: warning}
+          windows:
+            - {long: 1d, short: 2h, burnRate: 2}
+      sli:
+        errorRatio: {}

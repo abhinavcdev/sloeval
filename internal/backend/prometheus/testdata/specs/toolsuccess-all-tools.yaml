@@ -1,0 +1,13 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: tool-all
+spec:
+  service: chat
+  labels:
+    team: ml
+  slos:
+    - name: tools
+      objective: 99
+      sli:
+        toolSuccess: {}
