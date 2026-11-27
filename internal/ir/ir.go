@@ -189,6 +189,16 @@ func Build(obj *v1alpha1.AISLO) (*Spec, error) {
 		}
 		s.SLOs = append(s.SLOs, *slo)
 	}
+	// promtool tests and silences address alerts by name, so each SLO needs its own.
+	owner := map[string]string{}
+	for _, slo := range s.SLOs {
+		for _, a := range slo.Alerts {
+			if o, ok := owner[a.Name]; ok && o != slo.Name {
+				return nil, fmt.Errorf("alert name %q is used by SLOs %q and %q; set a distinct alerting.name", a.Name, o, slo.Name)
+			}
+			owner[a.Name] = slo.Name
+		}
+	}
 	return s, nil
 }
 

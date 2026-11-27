@@ -1,0 +1,17 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: demo
+spec:
+  service: demo
+  alerting:
+    annotations:
+      summary: "{{ $labels.sloe_slo }} is burning budget"
+      description: "value is {{ $value | humanizePercentage }}"
+  slos:
+    - name: ttft
+      objective: 99
+      sli:
+        latency:
+          stage: ttft
+          threshold: 640ms

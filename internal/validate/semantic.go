@@ -3,6 +3,7 @@ package validate
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -95,10 +96,29 @@ func (c *semanticChecker) selector(p spec.Path, s *v1alpha1.Selector) {
 	}
 }
 
+var (
+	templateAction = regexp.MustCompile(`\{\{.*?\}\}`)
+	labelsAction   = regexp.MustCompile(`^\{\{-?\s*\$labels\.[a-zA-Z_][a-zA-Z0-9_]*\s*-?\}\}$`)
+)
+
+// annotations allows only {{ $labels.<name> }} templates: anything else
+// (e.g. $value) cannot be asserted exactly by the generated promtool tests.
+func (c *semanticChecker) annotations(p spec.Path, m map[string]string) {
+	for _, k := range sortedKeys(m) {
+		for _, act := range templateAction.FindAllString(m[k], -1) {
+			if !labelsAction.MatchString(act) {
+				c.errorf(p.Key(k), "use only {{ $labels.<name> }} in annotations; current burn rates are shown on the dashboards",
+					"unsupported template %s in annotation", act)
+			}
+		}
+	}
+}
+
 func (c *semanticChecker) alertingLabels(p spec.Path, a *v1alpha1.Alerting) {
 	if a == nil {
 		return
 	}
+	c.annotations(p.Key("annotations"), a.Annotations)
 	c.labelMap(p.Key("labels"), a.Labels)
 	if a.Page != nil {
 		c.labelMap(p.Key("page").Key("labels"), a.Page.Labels)

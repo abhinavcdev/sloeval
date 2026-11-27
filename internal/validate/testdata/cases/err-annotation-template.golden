@@ -1,0 +1,2 @@
+err-annotation-template.yaml:10:20: error: spec.alerting.annotations.description: unsupported template {{ $value | humanizePercentage }} in annotation
+    hint: use only {{ $labels.<name> }} in annotations; current burn rates are shown on the dashboards

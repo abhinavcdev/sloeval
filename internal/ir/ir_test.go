@@ -2,6 +2,7 @@ package ir
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -193,5 +194,26 @@ func TestEvalScoreBucketBelow(t *testing.T) {
 	}
 	if !found {
 		t.Errorf("expected le=0.6 (bucket below 0.7), got %v", bad)
+	}
+}
+
+func TestDuplicateAlertNames(t *testing.T) {
+	src := head + `  slos:
+    - name: a
+      objective: 99
+      alerting: {name: Same}
+      sli: {errorRatio: {}}
+    - name: b
+      objective: 99
+      alerting: {name: Same}
+      sli: {errorRatio: {}}
+`
+	docs, _ := spec.Load("t.yaml", []byte(src))
+	obj, err := decodeForTest(docs[0].Value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Build(obj); err == nil || !strings.Contains(err.Error(), `alert name "Same"`) {
+		t.Fatalf("err = %v", err)
 	}
 }
