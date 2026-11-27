@@ -1,0 +1,2 @@
+err-ttft-agent.yaml:13:19: error: spec.slos[0].sli.latency.target: stage ttft is not available for target agent: semconv has no agent time-to-first-token metric
+    hint: use stage: end_to_end for agents, or target: inference for TTFT

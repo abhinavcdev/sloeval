@@ -1,0 +1,19 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: demo
+spec:
+  service: demo
+  selector:
+    matchLabels:
+      gen_ai_agent_name: support
+  slos:
+    - name: latency
+      objective: 99
+      sli:
+        latency:
+          stage: end_to_end
+          threshold: 10.24s
+          selector:
+            matchLabels:
+              gen_ai_tool_name: search

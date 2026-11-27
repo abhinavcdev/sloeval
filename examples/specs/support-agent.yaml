@@ -38,7 +38,7 @@ spec:
         latency:
           stage: ttft
           source: client
-          threshold: 640ms
+          threshold: 0.64s
 
     - name: latency
       description: Full responses complete in time.
@@ -46,7 +46,19 @@ spec:
       sli:
         latency:
           stage: end_to_end
-          threshold: 10240ms
+          threshold: 10.24s
+
+    - name: agent-latency
+      description: A whole agent turn (tools included) finishes in time.
+      objective: 99
+      sli:
+        latency:
+          stage: end_to_end
+          target: agent          # source defaults to server: the agent runtime's own measurement
+          threshold: 25.6s
+          selector:
+            matchLabels:
+              gen_ai_agent_name: support-agent
 
     - name: availability
       objective: 99.5

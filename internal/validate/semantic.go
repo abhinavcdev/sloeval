@@ -11,6 +11,7 @@ import (
 	"github.com/abhinavcdev/sloeval/internal/diag"
 	"github.com/abhinavcdev/sloeval/internal/labels"
 	"github.com/abhinavcdev/sloeval/internal/semconv"
+	"github.com/abhinavcdev/sloeval/internal/sli"
 	"github.com/abhinavcdev/sloeval/internal/spec"
 	"github.com/abhinavcdev/sloeval/pkg/api/v1alpha1"
 )
@@ -26,6 +27,8 @@ type semanticChecker struct {
 	doc   *spec.Document
 	diags []diag.Diagnostic
 	seen  map[string]bool // dedupe key: path + message
+
+	specSelector *v1alpha1.Selector
 }
 
 func checkSemantics(doc *spec.Document, obj *v1alpha1.AISLO) []diag.Diagnostic {
@@ -57,6 +60,7 @@ func (c *semanticChecker) warnf(p spec.Path, hint, format string, args ...any) {
 func (c *semanticChecker) run(obj *v1alpha1.AISLO) {
 	specP := spec.Path{}.Key("spec")
 	s := &obj.Spec
+	c.specSelector = s.Selector
 
 	c.labelMap(specP.Key("labels"), s.Labels)
 	c.selector(specP.Key("selector"), s.Selector)
@@ -107,7 +111,7 @@ func (c *semanticChecker) alertingLabels(p spec.Path, a *v1alpha1.Alerting) {
 func (c *semanticChecker) duration(p spec.Path, d v1alpha1.Duration) (time.Duration, bool) {
 	v, err := d.Parse()
 	if err != nil {
-		c.errorf(p, `use a Prometheus duration: units y, w, d, h, m, s, ms from largest to smallest, e.g. "1h30m"`,
+		c.errorf(p, `use a duration with units y, w, d, h, m, s, ms from largest to smallest, e.g. "1h30m" or "2.56s"`,
 			"%s", err.Error())
 		return 0, false
 	}
@@ -155,7 +159,7 @@ func (c *semanticChecker) slo(p spec.Path, slo *v1alpha1.SLO, defaults *v1alpha1
 
 // alerting checks the effective burn-rate windows of one SLO.
 func (c *semanticChecker) alerting(sloP spec.Path, slo *v1alpha1.SLO, defaults *v1alpha1.Alerting, window time.Duration) {
-	if (slo.Alerting != nil && slo.Alerting.Disabled) || (defaults != nil && defaults.Disabled) {
+	if v1alpha1.AlertingDisabled(slo.Alerting, defaults) {
 		return
 	}
 	type sev struct {
@@ -175,7 +179,7 @@ func (c *semanticChecker) alerting(sloP spec.Path, slo *v1alpha1.SLO, defaults *
 		if defaults != nil {
 			defPol = s.get(defaults)
 		}
-		if (sloPol != nil && sloPol.Disabled) || (defPol != nil && defPol.Disabled) {
+		if v1alpha1.PolicyDisabled(sloPol, defPol) {
 			continue
 		}
 		switch {
@@ -243,15 +247,24 @@ func (c *semanticChecker) sli(p spec.Path, s *v1alpha1.SLI) {
 	}
 	kp := p.Key(k)
 	c.selector(kp.Key("selector"), s.Selector())
+	if s.Latency == nil {
+		c.selectorCarried(kp.Key("selector"), s)
+	}
 
 	switch {
 	case s.Latency != nil:
 		l := s.Latency
+		m, ok := sli.LatencyMetric(l)
+		if !ok {
+			c.errorf(kp.Key("target"), "use stage: end_to_end for agents, or target: inference for TTFT",
+				"stage ttft is not available for target agent: semconv has no agent time-to-first-token metric")
+			return
+		}
+		c.selectorCarried(kp.Key("selector"), s)
 		thr, ok := c.duration(kp.Key("threshold"), l.Threshold)
 		if !ok {
 			return
 		}
-		m := latencyMetric(l)
 		c.bucket(kp.Key("threshold"), thr.Seconds(), m, func(f float64) string { return trimFloat(f) + "s" })
 	case s.Cost != nil:
 		m := semconv.CostPerRequest
@@ -276,19 +289,44 @@ func (c *semanticChecker) sli(p spec.Path, s *v1alpha1.SLI) {
 	}
 }
 
-// latencyMetric returns the semconv histogram a latency SLI reads.
-func latencyMetric(l *v1alpha1.LatencySLI) semconv.Metric {
-	server := l.Source == v1alpha1.SourceServer
-	switch {
-	case l.Stage == v1alpha1.StageTTFT && server:
-		return semconv.ServerTimeToFirstToken
-	case l.Stage == v1alpha1.StageTTFT:
-		return semconv.ClientTimeToFirstChunk
-	case server:
-		return semconv.ServerRequestDuration
-	default:
-		return semconv.ClientInferenceDuration
+// selectorCarried warns about selector keys (spec-level and SLI-level)
+// that a metric the SLI reads does not carry: the SLI would match nothing.
+func (c *semanticChecker) selectorCarried(sliSelP spec.Path, s *v1alpha1.SLI) {
+	check := func(p spec.Path, sel *v1alpha1.Selector) {
+		if sel == nil {
+			return
+		}
+		for _, k := range sortedKeys(sel.MatchLabels) {
+			if labels.Check(k) != nil {
+				continue // already an error
+			}
+			for _, m := range sli.Metrics(s) {
+				if m.Carries(k) {
+					continue
+				}
+				hint := fmt.Sprintf("remove %q from this selector; %s carries: %s", k, m.Name, strings.Join(carried(m), ", "))
+				if k == semconv.PromLabel(semconv.AttrAgentName) {
+					hint = "set target: agent to measure agent invocations, which carry gen_ai.agent.name"
+				}
+				kp := p.Key("matchLabels").Key(k)
+				c.report(diag.Warning, kp, c.doc.KeyPos(kp),
+					fmt.Sprintf("label %q is not an attribute of %s, so this SLI would match no series", k, m.Name), hint)
+			}
+		}
 	}
+	check(spec.Path{}.Key("spec").Key("selector"), c.specSelector)
+	check(sliSelP, s.Selector())
+}
+
+func carried(m semconv.Metric) []string {
+	var out []string
+	for _, a := range append(append([]string{}, m.Attrs...), semconv.ResourceAttrs...) {
+		if labels.IsAllowed(semconv.PromLabel(a)) || a == semconv.LabelJudge || a == semconv.LabelReference || a == semconv.LabelOutcome {
+			out = append(out, semconv.PromLabel(a))
+		}
+	}
+	slices.Sort(out)
+	return out
 }
 
 // bucket warns when v is not a bucket boundary of m: a histogram "le"

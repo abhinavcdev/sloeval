@@ -1,0 +1,2 @@
+err-target-typo.yaml:12:19: error: spec.slos[0].sli.errorRatio.target: "agents" is not a valid value
+    hint: did you mean "agent"? use one of: inference, agent

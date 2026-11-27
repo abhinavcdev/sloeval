@@ -72,7 +72,7 @@ func TestValidateExitCodes(t *testing.T) {
 		{name: "missing file", args: []string{"validate", "does-not-exist.yaml"}, wantCode: ExitUsage, wantStderr: "does-not-exist.yaml"},
 		{name: "empty dir", args: []string{"validate", t.TempDir()}, wantCode: ExitUsage, wantStderr: "no .yaml or .yml files"},
 		{name: "directory", args: []string{"validate", "../../examples/specs"}, wantCode: ExitOK, wantStdout: "support-agent.yaml: ok"},
-		{name: "stdin", stdin: string(data), args: []string{"validate", "-"}, wantCode: ExitOK, wantStdout: "<stdin>: ok (1 document, 9 SLOs)"},
+		{name: "stdin", stdin: string(data), args: []string{"validate", "-"}, wantCode: ExitOK, wantStdout: "<stdin>: ok (1 document, 10 SLOs)"},
 		{name: "stdin invalid", stdin: "kind: AISLO\n", args: []string{"validate", "-"}, wantCode: ExitError, wantStdout: "<stdin>: invalid"},
 	}
 	for _, tt := range tests {

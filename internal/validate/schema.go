@@ -70,7 +70,7 @@ var requiredHints = map[string]string{
 // patternHints explains a pattern/length failure, by the schema location
 // (fragment) of the failing subschema.
 var patternHints = map[string]struct{ what, hint string }{
-	"/$defs/duration":                 {"is not a valid duration", `use a Prometheus duration such as "2s", "500ms", "1h30m" or "30d"`},
+	"/$defs/duration":                 {"is not a valid duration", `use a duration such as "2s", "500ms", "2.56s", "1h30m" or "30d"`},
 	"/$defs/dnsName":                  {"is not a valid name", "use 1-63 lowercase letters, digits and '-', starting and ending with a letter or digit, e.g. ttft or cost-per-task"},
 	"/$defs/labelName":                {"is not a valid label name", "use letters, digits and '_', not starting with a digit, at most 64 characters"},
 	"/$defs/labelValue":               {"is not allowed as a label value", "label values must be 1-128 characters of letters, digits and _ . : / - (no spaces); never put free text, prompts or IDs in labels"},

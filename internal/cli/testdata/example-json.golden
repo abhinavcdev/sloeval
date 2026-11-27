@@ -3,7 +3,7 @@
     {
       "file": "../../examples/specs/support-agent.yaml",
       "documents": 1,
-      "slos": 9,
+      "slos": 10,
       "errors": 0,
       "warnings": 0
     }

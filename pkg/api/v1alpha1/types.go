@@ -84,6 +84,17 @@ const (
 	StageEndToEnd LatencyStage = "end_to_end"
 )
 
+// Target selects which operations an SLI measures.
+type Target string
+
+// Targets.
+const (
+	// TargetInference measures model inference calls (the default).
+	TargetInference Target = "inference"
+	// TargetAgent measures agent invocations (they carry gen_ai.agent.name).
+	TargetAgent Target = "agent"
+)
+
 // LatencySource selects whether latency is measured by the client or the model server.
 type LatencySource string
 
@@ -96,7 +107,10 @@ const (
 // LatencySLI measures an SLI where good = requests with duration <= Threshold.
 type LatencySLI struct {
 	Stage LatencyStage `json:"stage"`
-	// Source defaults to SourceClient.
+	// Target defaults to TargetInference. TTFT exists for inference only.
+	Target Target `json:"target,omitempty"`
+	// Source defaults to SourceClient for inference and SourceServer (the
+	// agent runtime's own measurement) for agents.
 	Source    LatencySource `json:"source,omitempty"`
 	Threshold Duration      `json:"threshold"`
 	Selector  *Selector     `json:"selector,omitempty"`
@@ -104,6 +118,8 @@ type LatencySLI struct {
 
 // ErrorRatioSLI measures an SLI where good = operations with no error.type, except listed types.
 type ErrorRatioSLI struct {
+	// Target defaults to TargetInference.
+	Target            Target    `json:"target,omitempty"`
 	ExcludeErrorTypes []string  `json:"excludeErrorTypes,omitempty"`
 	Selector          *Selector `json:"selector,omitempty"`
 }
@@ -135,8 +151,10 @@ type EvalScoreSLI struct {
 
 // EvalCoverageSLI measures an SLI where good = operations with at least one Evaluator result.
 type EvalCoverageSLI struct {
-	Evaluator string    `json:"evaluator"`
-	Selector  *Selector `json:"selector,omitempty"`
+	Evaluator string `json:"evaluator"`
+	// Target defaults to TargetInference: the operations that should be evaluated.
+	Target   Target    `json:"target,omitempty"`
+	Selector *Selector `json:"selector,omitempty"`
 }
 
 // ToolSuccessSLI measures an SLI where good = tool executions with no error.type. Empty Tools means all tools.
@@ -154,7 +172,9 @@ type JudgeAgreementSLI struct {
 
 // Alerting configures alerts for an SLO (or defaults for all SLOs).
 type Alerting struct {
-	Disabled bool `json:"disabled,omitempty"`
+	// Disabled turns all alerts off. The nearest level that sets it wins, so
+	// an SLO can set disabled: false to re-enable alerts disabled in spec.alerting.
+	Disabled *bool `json:"disabled,omitempty"`
 	// Name is the alert name prefix. Defaults to CamelCase(service + slo).
 	Name string `json:"name,omitempty"`
 	// Labels are routing labels; keys must be on the label allowlist.
@@ -167,7 +187,8 @@ type Alerting struct {
 
 // AlertPolicy configures one alert severity.
 type AlertPolicy struct {
-	Disabled bool              `json:"disabled,omitempty"`
+	// Disabled turns this severity off; the nearest level that sets it wins.
+	Disabled *bool             `json:"disabled,omitempty"`
 	Labels   map[string]string `json:"labels,omitempty"`
 	// Windows overrides the SRE Workbook default windows.
 	Windows []BurnRateWindow `json:"windows,omitempty"`

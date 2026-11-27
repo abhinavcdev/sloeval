@@ -74,6 +74,11 @@ instrument names carry the unit: `sloe.gen_ai.request.cost.usd` and
 `sloe.gen_ai.task.cost.usd`. The Prometheus names stay
 `sloe_gen_ai_{request,task}_cost_usd`.
 
+**2e. Decimal durations** (added during implementation). Durations may
+use decimal numbers (`25.6s`, `2.56s`), so latency thresholds can match the
+semconv bucket boundaries. Windows are always rendered in whole units
+(`1h30m`), so PromQL range selectors stay valid.
+
 ## 3. IR (`internal/ir`)
 
 ```go

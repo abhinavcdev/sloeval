@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 )
@@ -11,7 +12,8 @@ import (
 type Duration string
 
 // Parse returns the duration value. Units, largest first and each at most
-// once: y (365d), w, d, h, m, s, ms.
+// once: y (365d), w, d, h, m, s, ms. Numbers may have a decimal fraction
+// ("25.6s"), which is useful for histogram thresholds.
 func (d Duration) Parse() (time.Duration, error) {
 	return ParseDuration(string(d))
 }
@@ -49,6 +51,18 @@ func ParseDuration(s string) (time.Duration, error) {
 		if err != nil {
 			return 0, fmt.Errorf("invalid duration %q: %w", s, err)
 		}
+		frac := ""
+		if j < len(s) && s[j] == '.' {
+			f := j + 1
+			for f < len(s) && s[f] >= '0' && s[f] <= '9' {
+				f++
+			}
+			if f == j+1 {
+				return 0, fmt.Errorf("invalid duration %q: expected digits after '.'", s)
+			}
+			frac = s[j+1 : f]
+			j = f
+		}
 		k := j
 		for k < len(s) && (s[k] < '0' || s[k] > '9') {
 			k++
@@ -76,6 +90,10 @@ func ParseDuration(s string) (time.Duration, error) {
 			return 0, fmt.Errorf("invalid duration %q: too large", s)
 		}
 		add := time.Duration(n) * ud
+		if frac != "" {
+			fv, _ := strconv.ParseFloat("0."+frac, 64)
+			add += time.Duration(math.Round(fv * float64(ud)))
+		}
 		if total > time.Duration(1<<63-1)-add {
 			return 0, fmt.Errorf("invalid duration %q: too large", s)
 		}

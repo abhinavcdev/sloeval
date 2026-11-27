@@ -1,2 +1,2 @@
 err-duration-order.yaml:13:22: error: spec.slos[0].sli.latency.threshold: invalid duration "30m1h": units must go from largest to smallest, each once
-    hint: use a Prometheus duration: units y, w, d, h, m, s, ms from largest to smallest, e.g. "1h30m"
+    hint: use a duration with units y, w, d, h, m, s, ms from largest to smallest, e.g. "1h30m" or "2.56s"

@@ -42,7 +42,8 @@
       "propertyNames": { "$ref": "#/$defs/labelName" },
       "additionalProperties": { "$ref": "#/$defs/labelValue" }
     },
-    "duration": { "type": "string", "pattern": "^([0-9]+(ms|s|m|h|d|w|y))+$" },
+    "target":   { "enum": ["inference", "agent"] },
+    "duration": { "type": "string", "pattern": "^([0-9]+(\\.[0-9]+)?(ms|s|m|h|d|w|y))+$" },
     "selector": {
       "type": "object",
       "additionalProperties": false,
@@ -73,6 +74,7 @@
           "required": ["stage", "threshold"],
           "properties": {
             "stage":     { "enum": ["ttft", "end_to_end"] },
+            "target":    { "$ref": "#/$defs/target" },
             "source":    { "enum": ["client", "server"] },
             "threshold": { "$ref": "#/$defs/duration" },
             "selector":  { "$ref": "#/$defs/selector" }
@@ -81,6 +83,7 @@
         "errorRatio": {
           "type": "object", "additionalProperties": false,
           "properties": {
+            "target":            { "$ref": "#/$defs/target" },
             "excludeErrorTypes": { "type": "array", "items": { "$ref": "#/$defs/labelValue" } },
             "selector":          { "$ref": "#/$defs/selector" }
           }
@@ -110,6 +113,7 @@
           "required": ["evaluator"],
           "properties": {
             "evaluator": { "$ref": "#/$defs/labelValue" },
+            "target":    { "$ref": "#/$defs/target" },
             "selector":  { "$ref": "#/$defs/selector" }
           }
         },

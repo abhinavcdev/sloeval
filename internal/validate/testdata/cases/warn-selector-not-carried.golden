@@ -1,0 +1,4 @@
+warn-selector-not-carried.yaml:9:7: warning: spec.selector.matchLabels.gen_ai_agent_name: label "gen_ai_agent_name" is not an attribute of gen_ai.client.inference.duration, so this SLI would match no series
+    hint: set target: agent to measure agent invocations, which carry gen_ai.agent.name
+warn-selector-not-carried.yaml:19:15: warning: spec.slos[0].sli.latency.selector.matchLabels.gen_ai_tool_name: label "gen_ai_tool_name" is not an attribute of gen_ai.client.inference.duration, so this SLI would match no series
+    hint: remove "gen_ai_tool_name" from this selector; gen_ai.client.inference.duration carries: deployment_environment_name, error_type, gen_ai_operation_name, gen_ai_provider_name, gen_ai_request_model, gen_ai_response_model, service_name
