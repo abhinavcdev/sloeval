@@ -1,0 +1,42 @@
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: chat
+spec:
+  service: chat
+  labels:
+    team: ml
+  slos:
+    - name: errors
+      objective: 99
+      sli: {errorRatio: {}}
+    - name: latency
+      objective: 99
+      alerting:
+        labels: {team: ml-latency}
+        page: {disabled: true}
+      sli: {latency: {stage: end_to_end, threshold: 2.56s}}
+---
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: search
+spec:
+  service: search
+  slos:
+    - name: tools
+      objective: 99
+      sli: {toolSuccess: {}}
+---
+apiVersion: sloeval.dev/v1alpha1
+kind: AISLO
+metadata:
+  name: batch
+spec:
+  service: batch
+  alerting:
+    disabled: true
+  slos:
+    - name: errors
+      objective: 99
+      sli: {errorRatio: {}}
