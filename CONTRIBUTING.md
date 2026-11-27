@@ -42,7 +42,7 @@ dependencies:
 | Module | Purpose |
 |---|---|
 | `go.yaml.in/yaml/v3` | YAML parsing with line/column positions |
-| `github.com/santhosh-tekuri/jsonschema/v6` | JSON Schema (Draft 2020-12) validation |
+| `github.com/santhosh-tekuri/jsonschema/v6` | JSON Schema (Draft 2020-12) validation (pulls in `golang.org/x/text`) |
 
 ## Labels and privacy
 

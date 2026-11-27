@@ -477,8 +477,10 @@ additionalProperties, oneOf...) to our own messages and hints. For
 - Label **values** match `^[A-Za-z0-9_.:/-]{1,128}$` (no whitespace, so
   free text can't get in).
 - Reserved label keys (`alertname`, `__*`, `sloe_*`, `le`) can't be set.
-- Durations parse. Burn-rate windows: `short < long <= window`, and
-  `burnRate <= window/long` (a higher rate can never fire).
+- Durations parse. Burn-rate windows: `short < long <= window`. A burn rate
+  with `burnRate x (1 - objective) >= 1` is an error (it needs an error ratio
+  above 100%, so it can never fire). `burnRate > window/long` is a warning
+  (it fires only after more than the whole budget is spent in the long window).
 - Objective `> 99.99` gives a warning: the error budget is too small to
   alert on reliably at typical traffic.
 - Latency threshold not on the semconv advisory bucket boundaries gives a
@@ -562,3 +564,21 @@ CI tools (installed as binaries, not Go deps): `golangci-lint`, `promtool`
     (`gen_ai.client.operation.duration` SHOULD NOT be used for inference in v0.1.0)
   - `ttft` + `server` -> `gen_ai.server.time_to_first_token`
   - `end_to_end` + `server` -> `gen_ai.server.request.duration`
+
+## 9. Phase 0 follow-ups (decided 2026-11-27)
+
+- **golang.org/x/text** is accepted as a transitive dependency of
+  `santhosh-tekuri/jsonschema/v6`. It is maintained by the Go team, under BSD-3-Clause.
+- **The burn-rate check** follows section 5 as amended above.
+- **Semconv policy:** pin tagged releases of `semantic-conventions-genai`
+  only, never `main`. Adopting a new release is its own PR: it changes
+  `internal/semconv` and regenerates the goldens.
+- **Resource attributes:** `service_name` and `deployment_environment_name`
+  stay on the allowlist. sloe documents that the backend has to promote them
+  (Prometheus 3 `otlp.promote_resource_attributes`, or the Mimir equivalent),
+  and it never joins `target_info` in generated rules. The docs land in Phase 2.
+- **Agent-scoped SLIs** and **re-enabling alerts per SLO**: API amendments
+  proposed in design 0002 section 2.
+- **The CI trigger** also runs on pushes to `claude/**` branches, so work branches
+  get CI without opening a PR.
+- **API group:** still a placeholder. The owner decides before v0.1.0.
