@@ -1,0 +1,2 @@
+err-minscore-lowest.yaml:13:21: error: spec.slos[0].sli.evalScore.minScore: minScore 0.1 must be above the lowest score bucket boundary 0.1: failures are counted in the bucket below minScore
+    hint: use a minScore above 0.1, or passLabels for label-based evaluators

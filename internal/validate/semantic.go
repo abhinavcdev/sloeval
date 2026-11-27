@@ -273,8 +273,14 @@ func (c *semanticChecker) sli(p spec.Path, s *v1alpha1.SLI) {
 		}
 		c.bucket(kp.Key("thresholdUSD"), s.Cost.ThresholdUSD, m, trimFloat)
 	case s.EvalScore != nil:
-		if s.EvalScore.MinScore != nil {
-			c.bucket(kp.Key("minScore"), *s.EvalScore.MinScore, semconv.EvaluationScore, trimFloat)
+		if ms := s.EvalScore.MinScore; ms != nil {
+			if lowest := semconv.EvaluationScore.Buckets[0]; *ms <= lowest {
+				c.errorf(kp.Key("minScore"), fmt.Sprintf("use a minScore above %s, or passLabels for label-based evaluators", trimFloat(lowest)),
+					"minScore %v must be above the lowest score bucket boundary %s: failures are counted in the bucket below minScore",
+					*ms, trimFloat(lowest))
+			} else {
+				c.bucket(kp.Key("minScore"), *ms, semconv.EvaluationScore, trimFloat)
+			}
 		}
 		c.unique(kp.Key("passLabels"), s.EvalScore.PassLabels)
 	case s.ToolSuccess != nil:
