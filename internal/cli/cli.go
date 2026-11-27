@@ -33,6 +33,7 @@ Usage:
 
 Commands:
   validate   Check AISLO spec files and report problems
+  generate   Generate Prometheus rules, promtool tests and Alertmanager routes
   version    Print the sloe version
 
 Run "sloe <command> -h" for command flags.
@@ -45,6 +46,8 @@ type Env struct {
 	ReadFile       func(string) ([]byte, error)
 	Stat           func(string) (fs.FileInfo, error)
 	WalkDir        func(string, fs.WalkDirFunc) error
+	// WriteFile writes a file atomically, creating parent directories.
+	WriteFile func(string, []byte) error
 }
 
 // OSEnv returns an Env backed by the real process.
@@ -52,6 +55,7 @@ func OSEnv() Env {
 	return Env{
 		Stdin: os.Stdin, Stdout: os.Stdout, Stderr: os.Stderr,
 		ReadFile: os.ReadFile, Stat: os.Stat, WalkDir: filepath.WalkDir,
+		WriteFile: writeFileAtomic,
 	}
 }
 
@@ -64,6 +68,8 @@ func Run(args []string, env Env) int {
 	switch args[0] {
 	case "validate":
 		return runValidate(args[1:], env)
+	case "generate":
+		return runGenerate(args[1:], env)
 	case "version", "--version":
 		fmt.Fprintln(env.Stdout, "sloe", Version)
 		return ExitOK
