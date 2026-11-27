@@ -1,6 +1,6 @@
 # 0002: IR, Prometheus rules and alerts, Alertmanager routing
 
-Status: **proposed** (Phase 1, step 1, awaiting approval)
+Status: **accepted** (2026-11-27). Open questions resolved with the recommendations: O1 bucket approach, O2 `server` default for `target: agent`, O3 one alert name per SLO split by `sloe_severity`, O4 unweighted rollup (Sloth-style).
 
 Builds on 0001 (accepted). There are no new dependencies. PromQL is generated as
 strings and checked with `promtool` in CI.
