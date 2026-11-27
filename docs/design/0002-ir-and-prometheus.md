@@ -20,7 +20,7 @@ spec files -> validate (0001) -> ir.Build -> backend/prometheus -> rules + promt
   - `<dir>/prometheus/<id>.test.yaml`
   - `<dir>/alertmanager/routes.yaml`
 
-  `<id>` is `metadata.name`, prefixed with `<namespace>-` when a namespace is set.
+  `<id>` is `metadata.name`, prefixed with `<namespace>.` when a namespace is set (`.` cannot occur in either name, so IDs cannot collide).
 - Output is byte-for-byte deterministic: sorted keys, stable ordering, and
   no timestamps or version strings in the files.
 - Files are written atomically (temp file + rename). Other files in `<dir>`
@@ -368,3 +368,34 @@ receivers:                            # names only; fill in integrations
 - **O4 The window rollup** (unweighted average of 5m ratios, as in Sloth), or
   a traffic-weighted ratio that needs the bad and total rates recorded as
   extra series (two more series per SLO)?
+
+## 12. Implementation notes (Phase 1)
+
+These are the changes from the text above, made while implementing:
+
+- **Zero traffic.** The denominator is `(sum(rate(TOTAL[W])) > 0)`, so an
+  idle window records no sample instead of NaN. A NaN would poison the
+  window rollup (`avg_over_time`). `or vector(0)` is applied only to
+  error-count terms, never to the subtracted bucket terms. A wrong `le` then
+  shows up as "no data" and not as a 100% error ratio.
+- **Coverage** counts successful operations only (`error_type=""`): a failed
+  operation is not expected to be evaluated.
+- **Every meta rule carries the full SLO label set.** Without it,
+  `promtool check rules` reports duplicates across SLO groups.
+- **Generated test timing.** Every case is evaluated at 70m with 1m samples.
+  The synthetic series start together and have a constant error ratio, so
+  each window's ratio is exactly `r` once it holds two samples. Evaluating
+  after a full 3d window made the example's tests take minutes instead of
+  seconds.
+- **Value assertion.** The error-ratio check is
+  `abs(sloe:sli_error:ratio_rate5m{…} - r) < bool 1e-9 == 1`. Prometheus' rate
+  arithmetic differs from `r` in the last bits, which is more than promtool's
+  `fuzzy_compare` allows.
+- **Annotation templates.** Only `{{ $labels.<name> }}` is allowed (a
+  validation error otherwise), so the tests can expand and assert
+  annotations exactly. promtool always compares annotations.
+- **Alert names** must be unique per spec, because tests and silences address
+  alerts by name. `ir.Build` rejects duplicates.
+- **Mutation check.** I made two edits by hand to a generated rule file:
+  raising a burn-rate threshold, and dropping a selector matcher. Both made
+  the generated tests fail.

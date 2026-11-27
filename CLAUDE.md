@@ -47,11 +47,15 @@ internal/spec/            YAML loading with line/col per field path
 internal/validate/        schema pass + semantic pass -> Diagnostics
 internal/labels/          label allowlist / denylist / value rules
 internal/semconv/         the single OTel GenAI naming file
-internal/ir/, internal/backend/{prometheus,alertmanager,grafana}/   (Phase 1+)
+internal/sli/              which semconv metrics each SLI reads (shared by validate and ir)
+internal/ir/               normalized SLOs, SLI ratio terms, merged alerts, burn windows
+internal/backend/prometheus/   recording rules, MWMB alerts, generated promtool tests
+internal/backend/alertmanager/ routing snippet
+internal/backend/grafana/  (Phase 2)
 connector/, operator/     separate Go modules (later phases)
 sdk/python/               (later)
 examples/specs/           example specs
-docs/design/              design docs (0001 = layout + API, accepted)
+docs/design/              design docs (0001 = layout + API, 0002 = IR + Prometheus; both accepted)
 docs/prompts/             per-phase task prompts
 ```
 
@@ -69,11 +73,24 @@ docs/prompts/             per-phase task prompts
 - judgeAgreement series come from the Python judge runner.
 - Selectors are equality-only in v1alpha1. No raw PromQL SLI yet.
 - Default burn-rate windows (30d): page 1h/5m@14.4, 6h/30m@6; ticket 1d/2h@3, 3d/6h@1.
-- `sloe validate` exit codes: 0 ok (warnings allowed), 1 errors, 2 usage/IO.
+- `sloe validate` / `sloe generate` exit codes: 0 ok (warnings allowed), 1 errors, 2 usage/IO.
+
+## Decisions from design 0002 (accepted)
+
+- `target: inference|agent` on latency/errorRatio/evalCoverage; agent latency defaults to
+  source server (gen_ai.invoke_agent.duration). `disabled` is tri-state, SLO level wins.
+- Error ratio = bad/total rates; latency counts successes only; zero traffic records nothing.
+- evalScore minScore: failures = bucket below minScore (exact for discrete scorers).
+- One alert name per SLO, page/ticket split by `sloe_severity`; no `for:`; annotations may
+  only template `{{ $labels.x }}`.
+- Window rollup = avg_over_time of the 5m ratio (Sloth-style, not traffic-weighted).
+- Generated promtool tests: fire case per window pair, quiet case, no-traffic case,
+  selector-checking value assertion. A golden scan test enforces the label allowlist.
 
 ## Commands
 
 ```sh
 make build test lint golden promtool promtool-check   # golden = UPDATE_GOLDEN=1 go test ./...
 go run ./cmd/sloe validate examples/specs/support-agent.yaml
+go run ./cmd/sloe generate -o out examples/specs/
 ```
